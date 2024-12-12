@@ -844,14 +844,3 @@ def plot_trajectory(particle, pos, tau):
     
     ax[0].legend()
     ax[1].legend()
-
-# %%
-# Test for particle orbit (Zoom-Whirl; Levin and Perez-Giz 2008)
-alice = Particle(r = 20, l = 0, Q = 0, E = 1, theta = np.pi/2, BH = BlackHole(mass = 1, spin = 0))
-tau_alice, pos_alice = alice.propagate(alice.pos, tf = 100, max_step = 1)
-
-# Test for photon orbit out of the plane
-# bob = Photon(r = 10, l = 0, E = 1, theta = np.pi/4, BH = BlackHole(mass = 1, spin = 0.995))
-# tau_bob, pos_bob = bob.propagate(bob.pos, tf = 350)
-
-
