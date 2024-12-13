@@ -219,7 +219,7 @@ class Particle:
         returns: sin(theta), used when integrating to find when we get a super small sin(theta), indicating numerical instability"""
         return np.abs(np.sin(pos[1])) - 1e-5
 
-    def propagate(self, pos0, tf, t0 = 0, max_step = 1e-3):
+    def propagate(self, pos0, tf, t0 = 0, max_step = 1e-3, verbose = True):
         """pos0 = initial coordinates of the particle
            tf = final proper time
            t0 = initial proper time"""
@@ -243,16 +243,18 @@ class Particle:
             solver_status = traj.status # update status of the solver
 
             if solver_status == -1:
-                print("Failure! Debug values:")
-                print("t0 = ", solver_t0)
-                print("pos0 = ", solver_pos0)
-                print("last tau = ", traj.t[-1])
-                print("last pos = ", traj.y[:,-1])
-                print("last derivatives = ", self.__coupled_ODE(traj.t[-1], traj.y[:,-1]))
+                if verbose:
+                    print("Failure! Debug values:")
+                    print("t0 = ", solver_t0)
+                    print("pos0 = ", solver_pos0)
+                    print("last tau = ", traj.t[-1])
+                    print("last pos = ", traj.y[:,-1])
+                    print("last derivatives = ", self.__coupled_ODE(traj.t[-1], traj.y[:,-1]))
                 return traj.t, traj.y
             
             elif solver_status == 0:
-                print("Success! The particle reached the final proper time tau = ", traj.t[-1])
+                if verbose:
+                    print("Success! The particle reached the final proper time tau = ", traj.t[-1])
 
                 tau_array = np.concatenate((tau_array, traj.t[:]), axis = 0)
                 pos_array = np.concatenate((pos_array, traj.y[:,:]), axis = 1)
@@ -270,7 +272,9 @@ class Particle:
                     pos_array = np.concatenate((pos_array, traj.y[:,:]), axis = 1)
                 
                 else:
-                    print(f"Turning Point at r = {traj.y_events[0][0][0]}!")
+                    if verbose:
+                        print(f"Turning Point at r = {traj.y_events[0][0][0]}!")
+                    
                     prev_r_turn = traj.y_events[0][0][0]
                     
                     solver_t0 = traj.t[-2] # set one step before we hit rdot = 0 
@@ -282,7 +286,8 @@ class Particle:
                     pos_array = np.concatenate((pos_array, traj.y[:,:-2]), axis = 1)
             
             elif len(traj.t_events[1]) > 0:
-                print("The particle hit the event horizon at proper time tau = ", traj.t_events[1][0])
+                if verbose:
+                    print("The particle hit the event horizon at proper time tau = ", traj.t_events[1][0])
 
                 tau_array = np.concatenate((tau_array, traj.t[:]), axis = 0)
                 pos_array = np.concatenate((pos_array, traj.y[:,:]), axis = 1)
@@ -291,7 +296,9 @@ class Particle:
             
             elif self.flag_theta:
                 if len(traj.t_events[2]) > 0:
-                    print(f"Turning Point at theta = {traj.y_events[2][0][1]}!")
+                    if verbose:
+                        print(f"Turning Point at theta = {traj.y_events[2][0][1]}!")
+                    
                     self.sign_theta = -self.sign_theta
                     solver_t0 = traj.t[-2] 
                     solver_pos0 = traj.y[:,-2] 
@@ -486,7 +493,7 @@ class Photon:
         returns: sin(theta), used when integrating to find when we get a super small sin(theta), indicating numerical instability"""
         return np.abs(np.sin(pos[1])) - 1e-5
 
-    def propagate(self, pos0, tf, max_step = 1e-3, t0 = 0):
+    def propagate(self, pos0, tf, max_step = 1e-3, t0 = 0, verbose = True):
         """pos0 = initial coordinates of the photon
            tf = final proper time
            t0 = initial proper time"""
@@ -509,16 +516,19 @@ class Photon:
             solver_status = traj.status # update status of the solver
 
             if solver_status == -1:
-                print("Failure! Debug values:")
-                print("t0 = ", solver_t0)
-                print("pos0 = ", solver_pos0)
-                print("last tau = ", traj.t[-1])
-                print("last pos = ", traj.y[:,-1])
-                print("last derivatives = ", self.__coupled_ODE(traj.t[-1], traj.y[:,-1]))
+                if verbose:
+                    print("Failure! Debug values:")
+                    print("t0 = ", solver_t0)
+                    print("pos0 = ", solver_pos0)
+                    print("last tau = ", traj.t[-1])
+                    print("last pos = ", traj.y[:,-1])
+                    print("last derivatives = ", self.__coupled_ODE(traj.t[-1], traj.y[:,-1]))
+                
                 return traj.t, traj.y
             
             elif solver_status == 0:
-                print("Success! The photon reached the final proper time tau = ", traj.t[-1])
+                if verbose:
+                    print("Success! The photon reached the final proper time tau = ", traj.t[-1])
 
                 tau_array = np.concatenate((tau_array, traj.t[:]), axis = 0)
                 pos_array = np.concatenate((pos_array, traj.y[:,:]), axis = 1)
@@ -536,7 +546,9 @@ class Photon:
                     pos_array = np.concatenate((pos_array, traj.y[:,:]), axis = 1)
                 
                 else:
-                    print(f"Turning Point at r = {traj.y_events[0][0][0]}!")
+                    if verbose:
+                        print(f"Turning Point at r = {traj.y_events[0][0][0]}!")
+                    
                     prev_r_turn = traj.y_events[0][0][0]
                     
                     solver_t0 = traj.t[-2] # set one step before we hit rdot = 0 
@@ -548,7 +560,8 @@ class Photon:
                     pos_array = np.concatenate((pos_array, traj.y[:,:-2]), axis = 1)
             
             elif len(traj.t_events[1]) > 0:
-                print("The photon hit the event horizon at proper time tau = ", traj.t_events[1][0])
+                if verbose:
+                    print("The photon hit the event horizon at proper time tau = ", traj.t_events[1][0])
 
                 tau_array = np.concatenate((tau_array, traj.t[:]), axis = 0)
                 pos_array = np.concatenate((pos_array, traj.y[:,:]), axis = 1)
@@ -557,7 +570,9 @@ class Photon:
             
             elif self.flag_theta:
                 if len(traj.t_events[2]) > 0:
-                    print(f"Turning Point at theta = {traj.y_events[2][0][1]}!")
+                    if verbose:
+                        print(f"Turning Point at theta = {traj.y_events[2][0][1]}!")
+                    
                     self.sign_theta = -self.sign_theta
                     solver_t0 = traj.t[-2] 
                     solver_pos0 = traj.y[:,-2] 
